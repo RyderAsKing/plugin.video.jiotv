@@ -315,13 +315,13 @@ def play(plugin, channel_id, showtime=None, srno=None):
 # Login `route` to access from Settings
 @Script.register
 def login(plugin):
-    method = Dialog().yesno("Login", "Select Login Method",
+    method = Dialog().yesno("Login", "Select Login Method (updated by ryder)",
                             yeslabel="Keyboard", nolabel="WEB")
     if method == 1:
-        login_type = Dialog().yesno("Login", "Select Login Type",
+        login_type = Dialog().yesno("Login", "Select Login Type (updated by ryder)",
                                     yeslabel="OTP", nolabel="Password")
         if login_type == 1:
-            mobile = keyboard("Enter your Jio mobile number")
+            mobile = keyboard("Enter your Jio mobile number (updated by ryder)")
             error = sendOTP(mobile)
             if error:
                 Script.notify("Login Error", error)
