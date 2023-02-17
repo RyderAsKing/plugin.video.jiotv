@@ -16,7 +16,6 @@ from codequick.storage import PersistentDict
 from resources.lib.utils import getHeaders, isLoggedIn, login as ULogin, logout as ULogout, check_addon, sendOTP, get_local_ip
 from resources.lib.constants import GET_CHANNEL_URL, GENRE_MAP, LANG_MAP, FEATURED_SRC, CONFIG, CHANNELS_SRC, IMG_CATCHUP, PLAY_URL, IMG_CATCHUP_SHOWS, CATCHUP_SRC, M3U_SRC, EPG_SRC, M3U_CHANNEL
 
-
 # additional imports
 import urlquick
 from urllib.parse import urlencode
@@ -157,7 +156,7 @@ def show_category(plugin, category_id, by):
         else:
             return LANG_MAP[x.get("channelLanguageId")] == category_id
 
-    for each in filter(fltr, resp):
+    for each in filter(fltr, resp):   
         litm = Listitem.from_dict(**{
             "label": each.get("channel_name"),
             "art": {
@@ -237,9 +236,6 @@ def show_epg(plugin, day, channel_id):
             })
 
 
-
-
-
 # Play live stream/ catchup according to params.
 # Also insures that user is logged in.
 @Resolver.register
@@ -249,7 +245,6 @@ def play(plugin, channel_id, showtime=None, srno=None , programId=None, begin=No
     hasIs = is_helper.check_inputstream()
     if not hasIs:
         return
-
 
     rjson = {
         "channel_id": int(channel_id),
@@ -271,7 +266,6 @@ def play(plugin, channel_id, showtime=None, srno=None , programId=None, begin=No
         "Content-Type":"application/json"
     }
 
-    resp = urlquick.post(GET_CHANNEL_URL, json=rjson).json()
     headers = getHeaders()
     headers['channelid'] = str(channel_id)
     headers['srno'] = rjson["srno"] if "srno" in rjson else str(None)
@@ -279,7 +273,6 @@ def play(plugin, channel_id, showtime=None, srno=None , programId=None, begin=No
     art = {}
     channelName_m3u8 = resp.get("result", "").split("?")[0].split('/')[-1]
     channelName = channelName_m3u8[:-5].replace("_"," ")
-
     art["thumb"] = art["icon"] = IMG_CATCHUP + \
         resp.get("result", "").split("/")[-1].replace(".m3u8", ".png")
     cookie = resp.get("result", "").split("?")[1]
@@ -289,7 +282,6 @@ def play(plugin, channel_id, showtime=None, srno=None , programId=None, begin=No
     return Listitem().from_dict(**{
         "label": channelName,
         "art": art,
-#         "callback": resp.get("result", "") + "?" + urlencode(params),
         "callback": uriToUse,
         "properties": {
             "IsPlayable": True,
@@ -305,13 +297,13 @@ def play(plugin, channel_id, showtime=None, srno=None , programId=None, begin=No
 # Login `route` to access from Settings
 @Script.register
 def login(plugin):
-    method = Dialog().yesno("Login", "Select Login Method (updated by ryder)",
+    method = Dialog().yesno("Login", "Select Login Method",
                             yeslabel="Keyboard", nolabel="WEB")
     if method == 1:
-        login_type = Dialog().yesno("Login", "Select Login Type (updated by ryder)",
+        login_type = Dialog().yesno("Login", "Select Login Type",
                                     yeslabel="OTP", nolabel="Password")
         if login_type == 1:
-            mobile = keyboard("Enter your Jio mobile number (updated by ryder)")
+            mobile = keyboard("Enter your Jio mobile number")
             error = sendOTP(mobile)
             if error:
                 Script.notify("Login Error", error)
